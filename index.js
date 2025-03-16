@@ -1,7 +1,7 @@
 import express from "express";
 const server = express();
 import mongoose from "mongoose";
-import cors from "cors";
+// import cors from "cors";
 import dotenv from "dotenv";
 import productsRouter from "./routes/Products.js";
 import categoriesRouter from "./routes/Categories.js";
