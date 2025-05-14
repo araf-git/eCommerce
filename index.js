@@ -10,7 +10,7 @@ import usersRouter from "./routes/Users.js";
 import authRouter from "./routes/Auth.js";
 import cartRouter from "./routes/Cart.js";
 import ordersRouter from "./routes/Order.js";
-// import path from 'path'
+import path from 'path'
 
 //middlewares
 dotenv.config();
