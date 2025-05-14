@@ -1,8 +1,10 @@
 import express from "express";
-import { createUser, loginUser } from "../controller/Auth.js";
+import { register, login } from "../controller/Auth.js";
 
 const router = express.Router();
-// auth is already added in base path
-router.post("/signup", createUser).post("/login", loginUser);
+
+router
+    .post("/signup", register).
+    post("/login", login);
 
 export default router;

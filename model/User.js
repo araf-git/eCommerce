@@ -6,7 +6,6 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   role: { type: String, required: true, default: "user" },
   addresses: { type: [Schema.Types.Mixed] },
-  // TODO:  We can make a separate Schema for this
   name: { type: String },
   orders: { type: [Schema.Types.Mixed] },
 });
@@ -15,6 +14,7 @@ const virtual = userSchema.virtual("id");
 virtual.get(function () {
   return this._id;
 });
+
 userSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
@@ -25,3 +25,4 @@ userSchema.set("toJSON", {
 
 const User = mongoose.model("User", userSchema);
 export default User;
+

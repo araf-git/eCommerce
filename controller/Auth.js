@@ -1,29 +1,62 @@
-import  User  from "../model/User.js";
+import User from "../model/User.js";
+import bcrypt from "bcrypt";
 
-export const createUser = async (req, res) => {
-  const user = new User(req.body);
+export const register = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const doc = await user.save();
-    res.status(201).json({ id: doc.id, role: doc.role });
-  } catch (err) {
-    res.status(400).json(err);
+    const user = await User.findOne({ email });
+    
+    if (user) {
+      return res.status(400).json({
+        message: "Already Signed Up Using this email! Please Login",
+      });
+    }
+
+    if (email && password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newUser = new User({ email, password: hashedPassword });
+      const doc = await newUser.save();
+      
+      return res.status(201).json({
+        message: "Registration Successful.",
+      });
+    } else {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Unable to Register",
+    });
   }
 };
 
-export const loginUser = async (req, res) => {
+export const login = async (req, res) => {
+  console.log(req.body);
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email: req.body.email }).exec();
-    // TODO: this is just temporary, we will use strong password auth
-    // console.log({ user });
-    if (!user) {
-      res.status(401).json({ message: "no such user email" });
-    } else if (user.password === req.body.password) {
-      // TODO: We will make addresses independent of login
-      res.status(200).json({ id: user.id, role: user.role });
+    if (email && password) {
+      const user = await User.findOne({ email });
+      console.log("user", user);
+      if (!user) {
+        return res.status(400).json({ message: "User not registered" });
+      }
+
+      const passwordMatched = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatched) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      return res.status(200).json({ id: user.id, role: user.role });
     } else {
-      res.status(401).json({ message: "invalid credentials" });
+      return res.status(400).json({ message: "All fields are required" });
     }
-  } catch (err) {
-    res.status(400).json(err);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Unable to Login",
+    });
   }
 };
